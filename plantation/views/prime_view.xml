@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+      <!-- prime Configuration -->
+        <record id="prime_config_form" model="ir.ui.view">
+            <field name="name">prime_config_form</field>
+            <field name="model">prime.config</field>
+            <field name="arch" type="xml">
+                <form string="">
+                  <header>
+                      <button name="action_confirm" string="Recherche" type="object" icon="fa-check-circle" class="oe_highlight"/>
+                  </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                            <group>
+                                <field name="date_debut"/>
+                            </group>
+                            <group>
+                                <field name="date_fin"/>
+                            </group>
+                            <group>
+                                <field name="group_id"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="prime_config_tree" model="ir.ui.view">
+            <field name="name">prime_config_tree</field>
+            <field name="model">prime.config</field>
+            <field name="arch" type="xml">
+                <tree string="">
+                    <field name="name"/>
+                    <field name="date_debut"/>
+                    <field name="date_fin"/>
+                    <field name="group_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_prime_config" model="ir.actions.act_window">
+            <field name="name">Configuration Prime</field>
+            <field name="res_model">prime.config</field>
+        </record>
+
+      <!-- prime groupe -->
+        <record id="group_prime_form" model="ir.ui.view">
+            <field name="name">group_prime_form</field>
+            <field name="model">group.prime</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                          <field name="name"/>
+                        </group>
+                        <group>
+                          <label for="date_debut" string="Période"/>
+                           <div>
+                              Du <field name="date_debut" class="oe_inline"/>  Au <field name="date_fin" class="oe_inline"/>
+                           </div>
+                        </group>
+                          <notebook>
+                            <page string="Planteurs">
+                                <field name="line_farmer_ids" widget="many2many" domain="[('farmer','=',True)]"/>
+                            </page>
+                              <page string="Detail seuil">
+                                <field name="seuil_ids" widget="many2many">
+                                  <tree editable="bottom">
+                                <field name="seuil_tone_1"/>
+                                        <field name="seuil_ton_2"/>
+                                    <field name="seuil_atteindre_1" widget="percentage"/>/>
+                                        <field name="seuil_atteindre_2" widget="percentage"/>/>
+                                    <field name="group_id" invisible="1"/>
+                                  </tree>
+                              </field>
+                              </page>
+                          </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="group_prime_tree" model="ir.ui.view">
+            <field name="name">group_prime_tree</field>
+            <field name="model">group.prime</field>
+            <field name="arch" type="xml">
+                <tree string="">
+                    <field name="name"/>
+                    <field name="line_farmer_ids"/>
+                    <field name="seuil_ids"/>
+                    <field name="date_debut"/>
+                    <field name="date_fin"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_group_prime" model="ir.actions.act_window">
+            <field name="name">Groupe Prime</field>
+            <field name="res_model">group.prime</field>
+        </record>
+
+
+      <!-- Prime exceptionnele -->
+        <record id="prime_exceptionnele_form" model="ir.ui.view">
+            <field name="name">prime_exceptionnele_form</field>
+            <field name="model">prime.exceptionnele</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                              <label for="date_debut" string="Période"/>
+                               <div>
+                                  Du <field name="date_debut" class="oe_inline"/>  Au <field name="date_fin" class="oe_inline"/>
+                               </div>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="prime_exceptionnele_tree" model="ir.ui.view">
+            <field name="name">prime_exceptionnele_tree</field>
+            <field name="model">prime.exceptionnele</field>
+            <field name="arch" type="xml">
+                <tree string="">
+                    <field name="name"/>
+                    <field name="date_debut"/>
+                    <field name="date_fin"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_prime_exceptionnele" model="ir.actions.act_window">
+            <field name="name">Prime exceptionnele</field>
+            <field name="res_model">prime.exceptionnele</field>
+        </record>
+
+
+        <!--################ PLATING Prime  ##############-->
+        <record id="planting_prime_tree_view" model="ir.ui.view">
+            <field name="name">planting_prime_tree_view</field>
+            <field name="model">planting.prime</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="planting_prime_view_form" model="ir.ui.view">
+            <field name="name">planting_prime_view_form</field>
+            <field name="model">planting.prime</field>
+            <field name="arch" type="xml">
+                <form string="plating_pricing_form">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                            <group>
+                                <field name="date"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Prix Planteur">
+                                <field name="line_ids">
+                                    <tree editable="bottom">
+                                        <field name="date" invisible="1"/>
+                                        <field name="group_id"/>
+                                        <field name="price"/>
+                                        <field name="price_driver"/>
+                                        <field name="prime"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                     <!-- Chatter -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- <record id="planting_pricing_prime_graph_view" model="ir.ui.view">
+            <field name="name">planting_pricing.graph</field>
+            <field name="model">planting.pricing.prime</field>
+            <field name="arch" type="xml">
+                <graph string="ModelTitle">
+                    <field name="date"/>
+                    <field name="price" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="planting_pricing_pivot_prime_view" model="ir.ui.view">
+            <field name="name">planting_pricing.pivot</field>
+            <field name="model">planting.pricing.prime</field>
+            <field name="arch" type="xml">
+                <pivot string="ModelTitle">
+                    <field name="date" type="row"/>
+                    <field name="price" type="measure"/>
+                </pivot>
+            </field>
+        </record> -->
+
+        <record id="planting_prime_act_window" model="ir.actions.act_window">
+            <field name="name">Historique des primes</field>
+            <!-- <field name="type">ir.actions.act_window</field> -->
+            <field name="res_model">planting.prime</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Ajouter une prime
+                </p>
+            </field>
+        </record>
+
+
+      </data>
+    </odoo>

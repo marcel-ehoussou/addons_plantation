@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <report
+            string="Bulletin Planteur"
+            id="action_report_payslip_farmer"
+            model="planting.payslip"
+            report_type="qweb-pdf"
+            name="plantation.report_payslip_farmer"
+            file="plantation.report_payslip_farmer"
+            print_report_name="'Bulletin de paie - %s' % (object.partner_id.name)"
+        />
+    <template id="report_payslip_farmer">
+        <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <style>
+                        *{font-size:13px}
+                        .bordered{border:2px solid #000;padding:5px}
+                        p.text-center{font-size:20px,text-transform:uppercase
+                        table{background-color:#fff;text-align:center}
+                        table th{text-align:center }
+                    </style>
+
+                    <div class="row">
+                        <div class="col-6"/>
+
+                        <div class="col-6">
+                             <h4 class="text-center" >
+                                <t> BULLETIN PLANTEUR</t>
+                             </h4>
+                        </div>
+                    </div><br/>
+                    <table name="employee-infos" class="table table-sm table-condensed table-bordered" >
+                        <tr>
+                            <td><strong>Nom et Prenom</strong></td>
+                            <td><span t-field="o.partner_id"/></td>
+                            <td><strong>Code Planteur</strong></td>
+                            <td><span t-field="o.partner_id.ref"/></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reference paiement </strong></td>
+                            <td><span t-field="o.number"/></td>
+                            <td><strong>Numero de Compte</strong></td>
+                            <td><span t-field="o.acc_number"/></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Banque</strong></td>
+                            <td><span t-field="o.bank_id"/></td>
+                            <td><strong>Mode de paiement</strong></td>
+                            <td><span t-field="o.partner_id.myp_id"/></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Periode Debut</strong></td>
+                            <td><span t-field="o.date_from"/></td>
+                            <td><strong>Periode Fin</strong></td>
+                            <td><span t-field="o.date_to"/></td>
+                        </tr>
+                    </table>
+                    <table class="table table-sm table-condensed table-bordered"  style="text-align:center">
+                        <thead>
+                            <tr>
+                                <th>DATE LIVRAISON</th>
+                                <th>BASE</th>
+                                <th>PRIX UNITAIRE</th>
+                                <th>GAINS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.line_pesee_ids" t-as="p">
+                                <td><span t-field="p.date" /></td>
+                                <td><span t-field="p.qty" t-options='{"widget": "float", "precision": 0}'/></td>
+                                <td><span t-field="o.price" t-options='{"widget": "float", "precision": 0}'/></td>
+                                <td><span t-esc="o.price*p.qty" t-options='{"widget": "float", "precision": 0}'/></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td><strong>TOTAL LIVRAISON</strong></td>
+                                <td colspan="2">
+                                    <strong t-esc="o.amount_pesee" />
+                                </td>
+                                <td>
+                                    <strong t-esc="o.amount_pesee*o.price"
+                                    t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <table class="table table-sm table-bordered table-striped" style="text-align:center">
+                        <thead>
+                            <tr>
+                                <th>Ref</th>
+                                <th>Libellé</th>
+                                <th>Base</th>
+                                <th>Gains</th>
+                                <th>Retenues</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                <td><span t-field="line.salary_rule_id.sequence"/></td>
+                                <td style="width:200px;text-align:left">
+                                    <span t-field="line.salary_rule_id.name"/>
+                                </td>
+                        <!-- BASE-->
+                                <td>
+                                    <span t-field="line.amount" t-options='{"widget": "float", "precision": 0}'/>
+
+                                </td>
+<!--                                GAINS-->
+                                <td>
+                                    <span t-if="line.category_id.code=='BASE'" t-esc="line.total" t-options='{"widget": "float", "precision": 0}'/>
+                                    <span t-if="line.category_id.code=='PRIME'" t-esc="line.total" t-options='{"widget": "float", "precision": 0}'/>
+                                 </td>
+<!--                                RETENUES-->
+                                <td>
+                                    <span t-if="line.category_id.code=='RETENUE'"  t-esc="line.total" t-options='{"widget": "float", "precision": 0}'/>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                             <tr>
+                                <td colspan="3"><span>TOTAL </span></td>
+                                <td><span t-esc="o.gains" t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}' /></td>
+                                <td><span t-esc="o.returned" t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/></td>
+                              </tr>
+                            <tr>
+                                <td colspan="4"><h4>NET A PAYER</h4></td>
+                                <td>
+                                    <h4>
+                                        <span t-esc="o.amount_net" t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/>
+                                    </h4>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </t>
+    </template>
+</odoo>

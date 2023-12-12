@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_planting_payslip_tree" model="ir.ui.view">
+            <field name="name">planting.payslip.tree</field>
+            <field name="model">planting.payslip</field>
+            <field name="arch" type="xml">
+                <tree create="1" duplicate="0" decoration-primary="state =='draft'" decoration-muted="state == 'cancel'" decoration-info="state == 'confirmed'" decoration-success="state == 'done'" string="Payslips">
+                    <field name="number"/>
+                    <field name="partner_id"/>
+					<field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="name"/>
+                    <field name="price"/>
+                    <field name="amount_pesee" sum="Total"/>
+                    <field name="amount_net" sum="Total"/>
+                    <field name="state" widget="badge" decoration-primary="state =='draft'" decoration-muted="state == 'cancel'" decoration-info="state == 'confirmed'" decoration-success="state == 'done'"/>
+                </tree>
+            </field>
+        </record>
+        
+        <act_window name="Payslip Computation Details"
+            context="{'default_slip_id': active_id,'search_default_slip_id': active_id}"
+            res_model="planting.payslip.line"
+            binding_model="planting.payslip"
+            id="act_payslip_lines"/>
+
+        <record id="view_planting_payslip_form" model="ir.ui.view">
+            <field name="name">planting.payslip.form</field>
+            <field name="model">planting.payslip</field>
+            <field name="arch" type="xml">
+                <form string="Payslip">
+                <header>
+                    <button string="Confirmer" name="close_pesee" type='object' states="draft" class="btn-success" confirm="Confirmez-vous la validation de ce bulletin planteur ?"/>
+                    <button string="Calculer" name="compute_sheet" type='object' states="draft" class="oe_highlight"/>
+                    <button string="Mettre au brouillon" name="draft_pesee" type="object" states="cancel"/>
+                    <button string="Annuler" name="cancel_sheet" type="object" states="draft,confirmed,done"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
+                </header>
+                <sheet>
+                    <div>
+                        <label for="date_from" string="Periode"/>
+                        <field name="date_from"  class="oe_inline"/> - <field name="date_to" class="oe_inline"/>
+                    </div>
+                    <div class="oe_title" name="farmer_payslip">
+                        <label for="partner_id" class="oe_edit_only"/>
+                        <h1><field name="partner_id" options="{'no_create':True}" required="1"/></h1>
+                    </div>
+                    <group>
+                       <group>
+                           <field name="number" readonly="1" force_save="1"/>
+                            <field name="struct_id" attrs="{'required':[('partner_id','&lt;&gt;',False)]}" options="{'no_create':True}"/>
+                            <field name="name" readonly="1" force_save="1"/>
+                            <field name="acc_number" invisible="1"/>
+                            <field name="bank_id" invisible="1"/>
+                            <field name="gains" invisible="1"/>
+                            <field name="returned" invisible="1"/>
+                       </group>
+                      <group>
+                          <field name="price" readonly="1" force_save="1"  attrs="{'readonly':[('state','=','done')]}" />
+                          <field name="price_driver" readonly="1" force_save="1" attrs="{'readonly':[('state','=','done')]}" />
+                          <field name="prime" readonly="1" force_save="1" attrs="{'readonly':[('state','=','done')]}" />
+<!--                          <field name="price" string="Prix du transport" attrs="{'invisible':[('driver','=',False)],'readonly':[('state','=','done')]}"/>-->
+
+                          <field name="amount_pesee" readonly="1"/>
+                          <field name="amount_net" readonly="1"/>
+                          <field name="payslip_run_id" />
+                      </group>
+                    </group>
+                    <notebook>
+                        <page string="Calcul des feuilles de Paie" >
+                            <field name="line_ids" nolabel="1" readonly="1">
+                                <tree string="Salary Structure" editable="bottom" decoration-danger="code =='TR'" decoration-primary="code =='TG'" decoration-success="code =='NET'" >
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="category_id"/>
+                                    <field name="sequence" invisible="1"/>
+                                    <field name="quantity"/>
+                                    <field name="rate"/>
+                                    <field name="amount"/>
+                                    <field name="total"/>
+                                </tree>
+                                <form string="Payslip Line">
+                                    <group>
+                                        <field name="name"/>
+                                        <field name="code"/>
+                                        <field name="category_id"/>
+                                        <field name="sequence"/>
+                                        <field name="quantity"/>
+                                        <field name="rate"/>
+                                        <field name="amount"/>
+                                        <field name="total"/>
+                                        <field name="salary_rule_id"/>
+                                    </group>
+                                </form>
+                            </field>
+                            <separator string="Entrées"/>
+                            <field name="input_line_ids" nolabel="1">
+                                <tree string="Input" editable="bottom">
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="amount"/>
+                                </tree>
+                            </field>
+                        </page>
+						 <page string="Variables">
+                            <separator string="Prêts &amp; Bonus"/>
+                            <field name="input_line_ids" nolabel="1">
+                                <tree string="Input Data" editable="bottom">
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="amount"/>
+                                    <field name="sequence" invisible="1"/>
+                                </tree>
+                                <form string="Payslip Line">
+                                    <group>
+                                        <field name="name"/>
+                                        <field name="code"/>
+                                        <field name="payslip_id"/>
+                                        <field name="sequence"/>
+                                        <field name="amount"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Lignes de pesées">
+                            <field name="line_pesee_ids" readonly="1">
+                                <tree string="Lignes de pesées" decoration-primary="qty == 0">
+                                    <field name="name"/>
+                                    <field name="pesee_id"/>
+                                    <field name="date"/>
+                                    <field name="product_id"/>
+                                    <field name="qty" sum="Total"/>
+                                </tree>
+                            </field>
+                       </page>
+                       <page string="Informations comptables">
+                            <group>
+                                <group string="Details">
+                                    <field name="company_id" groups="base.group_multi_company"/>
+                                </group>
+                                <group name="accounting" string="Facturation">
+                                    <field name="paid" readonly="1"/>
+                                </group>
+                            </group>
+                            <div>
+                                <field name="note" placeholder="Ajouter une note interne..."/>
+                            </div>
+                       </page>
+                    </notebook>
+                </sheet>
+                     <!-- Chatter -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="planting_payslip_graph_view" model="ir.ui.view">
+            <field name="name">planting_payslip.graph</field>
+            <field name="model">planting.payslip</field>
+            <field name="arch" type="xml">
+                <graph string="ModelTitle">
+                    <field name="date_from"/>
+                    <field name="amount_pesee" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="planting_payslip_pivot_view" model="ir.ui.view">
+            <field name="name">planting_payslip.pivot</field>
+            <field name="model">planting.payslip</field>
+            <field name="arch" type="xml">
+                <pivot string="ModelTitle">
+                    <field name="date_from" type="row"/>
+                    <field name="partner_id" type="row"/>
+                    <field name="price" type="measure"/>
+                    <field name="amount_pesee" type="measure"/>
+                    <field name="amount_net" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="view_planting_payslip_filter" model="ir.ui.view">
+            <field name="name">planting.payslip.select</field>
+            <field name="model">planting.payslip</field>
+            <field name="arch" type="xml">
+                <search string="Factures">
+                    <field name="name" string="Bulletin" filter_domain="['|',('name','ilike',self),('number','ilike',self)]"/>
+                    <field name="date_from"/>
+                      <field name="partner_id"/>
+                    <field string="Lot de paie" name="payslip_run_id"/>
+                    <filter name="draft" string="Brouillon" domain="[('state','=','draft')]" help="Draft Slip"/>
+                    <filter name="done" string="Validée(s)" domain="[('state','=','done')]" help="Done Slip"/>
+                    <separator/>
+                    <filter string="Date" name="filter_order_date" date="date_from" default_period="this_year"/>
+                    <group expand="0" string="Grouper par">
+                        <filter string="Date" name="date" context="{'group_by':'date_from'}"/>
+                        <filter string="Planteurs" name="partner_id" context="{'group_by':'partner_id'}"/>
+                        <filter string="Lot de paie" name="payslip_run_id"  context="{'group_by':'payslip_run_id'}"/>
+                        <filter string="Societé" name="company_id" groups="base.group_multi_company"  context="{'group_by':'company_id'}"/>
+                        <filter string="Etat" name="state" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_view_planting_farmer_payslip" model="ir.actions.act_window">
+            <field name="name">Bulletin Planteur</field>
+            <field name="res_model">planting.payslip</field>
+            <field name="view_id" ref="view_planting_payslip_tree"/>
+            <field name="search_view_id" ref="view_planting_payslip_filter"/>
+            <field name="view_mode">tree,form,graph,pivot</field>
+            <field name="context">{'search_default_filter_order_date':1 }</field>
+        </record>
+
+        <!-- This Menu Item Must have a parent -->
+        <menuitem id="menu_categ_paid_farmer" name="Paie Planteurs" parent="menu_payroll" sequence="1"/>
+            <menuitem action="action_view_planting_farmer_payslip" id="menu_planting_farmer_payslip" parent="menu_categ_paid_farmer" sequence="2"/>
+
+
+        <!-- payslip runs -->
+
+        <record id="planting_payslip_run_filter" model="ir.ui.view">
+            <field name="name">planting.payslip.run.search</field>
+            <field name="model">planting.payslip.run</field>
+            <field name="arch" type="xml">
+                <search string="Lots de facture">
+                    <field name="name" string="Lot de facture"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+<!--                    <field name="zone_id"/>-->
+                    <filter name="draft" string="Brouillon" domain="[('state','=','draft')]" help="Draft Payslip Batches"/>
+                    <filter name="done_filter"  string="Fermé" domain="[('state','=','close')]" help="Done Payslip Batches"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="planting_payslip_run_tree" model="ir.ui.view">
+            <field name="name">planting.payslip.run.tree</field>
+            <field name="model">planting.payslip.run</field>
+            <field name="arch" type="xml">
+                <tree string="Lot de fiche de paie">
+                    <field name="name"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+<!--                    <field name="zone_id"/>-->
+                    <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'verifed'" decoration-primary="state == 'confirmed'" decoration-success="state == 'close'" decoration-muted="state == 'cancel'"/>
+
+                </tree>
+            </field>
+        </record>
+
+        <record id="planting_payslip_run_form" model="ir.ui.view">
+            <field name="name">planting.payslip.run.form</field>
+            <field name="model">planting.payslip.run</field>
+            <field name="arch" type="xml">
+                <form string="Lot de fiche de paie">
+                <header>
+                    <button name="close_payslip_run" type="objec" string="Fermer" states="confirmed" groups="plantation.plantation_manager" class="oe_highlight"/>
+                    <button name="%(action_planting_payslip_by_plantation)d"  type="action" string="Generer les bulletins" states="draft"  class="oe_highlight"/>
+                    <button name="confirm_payslip_run" type="object" groups="plantation.plantation_payroll_manager"  string="Confirmer" icon="fa-check-circle" states="verifed" class="oe_highlight"/>
+                    <button string="Calculer" name="compute_sheet" type='object' icon="fa-file" states="verifed" class="btn-danger"/>
+                    <button string="Mettre au brouillon" name="draft_payslip_run" groups="plantation.plantation_manager"  type="object" states="cancel" />
+                    <button string="Annuler" name="cancel_payslip_run" type="object" states="verifed,confirmed,close" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,verified,confirmed,close"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Payé"  bg_color="bg-success"
+                                attrs="{'invisible': [('state', '!=', 'close')]}"/>
+                    <label for="name" class="oe_edit_only"/>
+                    <h1>
+                        <field name="name"/>
+                    </h1>
+                    <group>
+                        <label for="date_start" string="Période"/>
+                         <div>
+                             <field name="date_start" class="oe_inline"/> - <field name="date_end" class="oe_inline"/>
+                         </div>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="struct_id" required="1" domain="[('farmer','=',True)]" options="{'no_create':True}"/>
+                        </group>
+                        <group>
+                            <field name="amount_net"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Paie">
+                             <field name="slip_ids" nolabel="1" attrs="{'readonly': [('state','not in',['draft','verifed'])]}">
+                                <tree string="Factures">
+                                    <field name="number"/>
+									<field name="partner_id" options="{'no_create':True}"/>
+									<field name="amount_pesee" sum="Total des pesees"/>
+									<field name="amount_net" sum="Total Net à payer"/>
+									<field name="state"/>
+                                </tree>
+                             </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                     <!-- Chatter -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+           <record id="action_planting_payslip_run_farmer" model="ir.actions.act_window">
+            <field name="name">Lot de paie Planteurs</field>
+            <field name="res_model">planting.payslip.run</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="planting_payslip_run_filter"/>
+        </record>
+
+        <menuitem action="action_planting_payslip_run_farmer" id="menu_planting_payslip_farmer_run" parent="menu_categ_paid_farmer" sequence="3"/>
+
+		<act_window
+            domain="[('payslip_run_id', '=', active_id)]"
+            id="act_payslip_line_plantation"
+            name="Bulletin(s)"
+            res_model="planting.payslip"
+            binding_model="planting.payslip.run"
+			
+        />	
+
+    </data>
+</odoo>

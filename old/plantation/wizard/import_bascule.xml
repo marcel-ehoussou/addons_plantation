@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="planting_weight_form_view" model="ir.ui.view">
+            <field name="name">planting.weight.form</field>
+            <field name="model">weight.weight</field>
+            <field name="arch" type="xml">
+                <form string="List of Weight">
+                    <header>
+                        <button name="action_confirm" string="Valider" class="oe_highlight" states="draft" type="object"/>
+                        <button name="cancel" string="Annuler" class="btn-danger" states="done" type="object"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Partenaire">
+                                <field name="code_farmer" readonly="1" attrs="{'invisible':[('state','!=','draft')]}"/>
+                                <field name="supplier_id" attrs="{'invisible':[('state','!=','done')]}"/>
+                                <field name="weigth_supplier" readonly="1"/>
+                                <field name="first_weigher" readonly="1"/>
+                            </group>
+                            <group string="Detail pésée">
+                                <field name="date" readonly="1"/>
+                                <field name="code_product" readonly="1" attrs="{'invisible':[('state','!=','draft')]}"/>
+                                <field name="product_id" attrs="{'invisible':[('state','!=','done')]}"/>
+                                <field name="weigth_1" readonly="1"/>
+                                <field name="weigth_2" readonly="1"/>
+                                <field name="qty" readonly="1" style="color:#ce1131"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Informations Transporteur">
+                                 <field name="driver" readonly="1"/>
+                                <field name="carrier" readonly="1"/>
+                            </group>
+                            <group string="Autres informations">
+                                 <field name="locality" readonly="1"/>
+                                <field name="sector" readonly="1"/>
+                                <field name="village" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="planting_weight_tree_view" model="ir.ui.view">
+            <field name="name">planting_weight.tree</field>
+            <field name="model">weight.weight</field>
+            <field name="arch" type="xml">
+                <tree string="List of Weight" limit="200">
+                    <field name="name"/>
+                    <field name="code_farmer" attrs="{'invisible':[('state','!=','draft')]}"/>
+                    <field name="supplier_id" attrs="{'invisible':[('state','!=','done')]}"/>
+                    <field name="date"/>
+                    <field name="code_product" attrs="{'invisible':[('state','!=','draft')]}"/>
+                    <field name="product_id" optional="show" attrs="{'invisible':[('state','!=','done')]}"/>
+                    <field name="weigth_1" optional="hide"/>
+                    <field name="weigth_2" optional="hide"/>
+                    <field name="weigth_supplier" optional="hide"/>
+                    <field name="qty" sum="Total"/>
+                    <field name="state" widget="badge" decoration-success="state == 'done'" decoration-danger="state == 'draft'"/>
+                    <field name="first_weigher" optional="hide"/>
+                    <field name="driver" optional="hide"/>
+                    <field name="carrier" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record id="planting_weight_graph_view" model="ir.ui.view">
+            <field name="name">planting.weight.graph</field>
+            <field name="model">weight.weight</field>
+            <field name="arch" type="xml">
+                <graph string="ModelTitle">
+                    <field name="supplier_id"/>
+                    <field name="qty" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="planting_weight_pivot_view" model="ir.ui.view">
+            <field name="name">planting_weight.pivot</field>
+            <field name="model">weight.weight</field>
+            <field name="arch" type="xml">
+                <pivot string="ModelTitle">
+                    <field name="supplier_id" type="row"/>
+                    <field name="date" type="row"/>
+                    <field name="qty" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="planting_weight_search_view" model="ir.ui.view">
+            <field name="name">planting_weight.search</field>
+            <field name="model">weight.weight</field>
+            <field name="arch" type="xml">
+                <search string="ModelTitle">
+                    <field name="name"/>
+                    <field name="locality"/>
+                    <field name="village"/>
+                    <field name="supplier_id"/>
+<!--                    <field name="driver_id"/>-->
+                    <separator/>
+                    <filter string="A traiter" name="draft" domain="[('state','=','draft')]"/>
+                    <filter string="Valider" name="done" domain="[('state','=','done')]"/>
+                    <group expand="1" string="Group By">
+                        <filter string="Planteur" name="suppliers" domain="[]"
+                                context="{'group_by':'supplier_id'}"/>
+<!--                        <filter string="Transporteurs" name="drivers" domain="[]"-->
+<!--                                context="{'group_by':'driver_id'}"/>-->
+                        <filter string="Localité" name="locality" domain="[]"
+                                context="{'group_by':'locality'}"/>
+                         <filter string="Etat" name="state" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="Peseur" name="weigher" domain="[]"
+                                context="{'group_by':'first_weigher'}"/>
+                         <filter string="Date" name="dates" domain="[]"
+                                context="{'group_by':'date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+
+        <record id="planting_weight_draft_act_window" model="ir.actions.act_window">
+            <field name="name">Import pesée</field>
+            <field name="res_model">weight.weight</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state','=','draft')]</field>
+        </record>
+        <!-- This Menu Item Must have a parent -->
+            <menuitem id="planting_weight_draft_menu" parent="menu_weigh" action="planting_weight_draft_act_window" sequence="1"/>
+
+        <record id="planting_weight_act_window" model="ir.actions.act_window">
+            <field name="name">Toutes les Pesées</field>
+            <field name="res_model">weight.weight</field>
+            <field name="view_mode">tree,form,graph,pivot</field>
+        </record>
+
+        <menuitem id="planting_weight_menu" parent="menu_weigh" action="planting_weight_act_window" sequence="2"/>
+
+    </data>
+</odoo>

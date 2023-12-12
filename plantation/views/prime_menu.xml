@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+
+      <menuitem id="menu_prime_config" name="Prime configuration"
+  			parent="menu_root_plantation" action="action_prime_config" sequence="6" />
+
+      <menuitem id="menu_prime_config_un" name="Prime configuration"
+  			parent="menu_prime_config" action="action_prime_config" sequence="1" />
+
+      <menuitem id="menu_group_prime" name="Groupe prime"
+  			parent="menu_prime_config" action="action_group_prime" sequence="2" />
+
+      <!-- <menuitem id="menu_planting_prime_act_window" name="Prix prime"
+  			parent="menu_prime_config" action="planting_prime_act_window" sequence="3" /> -->
+
+      <menuitem id="menu_prime_exceptionnele" name="Prime exceptionnelle"
+  			parent="menu_root_plantation" action="action_prime_exceptionnele" sequence="7" />
+
+    </data>
+  </odoo>
