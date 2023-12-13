@@ -24,7 +24,7 @@ class Farmers(models.Model):
     struct_id = fields.Many2one('planting.payroll.structure', string="Structure Salariale",)
     type_id = fields.Many2one('type.farmer', string="Type Planteur",)
     group_id = fields.Many2one('group.group', required=True, string="Groupe Tarification Planteur",)
-    group_prime_id = fields.Many2one('group.prime', string="Groupe Prime Planteur", required=True)    
+    prime_id = fields.Many2one('group.prime', string="Groupe Prime Planteur", required=True)    
     birthday = fields.Date(string='Date Immatriculation', required=False)
     number_aprocmac = fields.Char(string='Numero identification aprocmac', required=False)
     code_farmer = fields.Char(string='Code Planteur', required=False)
