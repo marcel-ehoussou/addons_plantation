@@ -60,7 +60,7 @@ class GroupPrime(models.Model):
     date_debut = fields.Date(string="Date début")
     date_fin = fields.Date(string="Date fin")
     name = fields.Char(string='Groupe',required=True)
-    line_farmer_ids = fields.One2many(comodel_name="res.partner", inverse_name="group_prime_id", string="Planteurs", required=False,)
+    line_farmer_ids = fields.One2many(comodel_name="res.partner", inverse_name="prime_id", string="Planteurs", required=False,)
     seuil_ids = fields.One2many(comodel_name="seuil.prime", inverse_name="group_id", string="Seuil", required=False,)
     line_ids = fields.One2many(comodel_name="planting.pricing.prime", inverse_name="group_id", string="Prix Planteurs", required=False,)
 
@@ -71,7 +71,7 @@ class SeuilPrime(models.Model):
     seuil_ton_2 = fields.Float(string="Seuil secondaire ")
     seuil_atteindre_1 = fields.Float(string="Seuil atteindre primaire")
     seuil_atteindre_2 = fields.Float(string="Seuil atteindre secondaire")
-    group_id = fields.Many2one(comodel_name='group.prime',string=' ',required=True, ondelete="cascade")
+    group_id = fields.Many2one(comodel_name='group.prime',string=' ', ondelete="cascade")
 
 
 

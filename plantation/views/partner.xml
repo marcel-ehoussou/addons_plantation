@@ -36,7 +36,7 @@
 		            <field name="vat" string="CNI/Attestation"/>
 		            <field name="struct_id" attrs="{'required':[('farmer','=',True)]}"/>
 		            <field name="group_id" required="1"/>
-		            <field name="group_prime_id" required="1"/>
+		            <field name="prime_id" invisible="1" />
 		            <field name="type_id" attrs="{'required':[('farmer','=',True)]}" options="{'no_create': True}"/>
 		            <field name="myp_id" attrs="{'required':[('farmer','=',True)]}"/>
 		            <field name="number_aprocmac"/>
