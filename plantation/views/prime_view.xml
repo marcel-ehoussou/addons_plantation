@@ -9,18 +9,27 @@
             <field name="arch" type="xml">
                 <form string="">
                   <header>
-                      <button name="action_confirm" string="Recherche" type="object" icon="fa-check-circle" class="oe_highlight"/>
+                      <button name="get_farmers_by_group" string="Voir" type="object" icon="fa-check-circle" class="oe_highlight"/>
+                      <button name="calculate_bonus_for_period" string="Calcul" type="object" icon="fa-check-circle" class="oe_highlight"/>
                   </header>
                     <sheet>
                         <group>
                             <group>
                                 <field name="name"/>
-                            </group> 
+                            </group>
                             <group>
                               Du <field name="date_debut" class="oe_inline"/>  Au <field name="date_fin" class="oe_inline"/>
                             </group>
                             <group>
                                 <field name="group_id"/>
+                            </group>
+                            <group>
+                                <field name="farmers_bonus_1" invisible="1"/>
+                                <field name="farmers_bonus_2" invisible="1"/>
+                                <field name="farmers_name_bonus"/>
+                            </group>
+                            <group>
+                                <field name="farmers_display" invisible="1"/>
                             </group>
                         </group>
                     </sheet>
@@ -42,7 +51,7 @@
         </record>
 
         <record id="action_prime_config" model="ir.actions.act_window">
-            <field name="name">Configuration Prime</field>
+            <field name="name">Prime</field>
             <field name="res_model">prime.config</field>
         </record>
 
@@ -56,12 +65,12 @@
                         <group>
                           <field name="name"/>
                         </group>
-                        <group>
+                        <!-- <group>
                           <label for="date_debut" string="Période"/>
                            <div>
                               Du <field name="date_debut" class="oe_inline"/>  Au <field name="date_fin" class="oe_inline"/>
                            </div>
-                        </group>
+                        </group> -->
                           <notebook>
                             <page string="Planteurs">
                                 <field name="line_farmer_ids" widget="many2many" domain="[('farmer','=',True)]"/>
@@ -69,10 +78,10 @@
                               <page string="Detail seuil">
                                 <field name="seuil_ids" widget="one2many">
                                   <tree editable="bottom">
-                                <field name="seuil_tone_1"/>
-                                        <field name="seuil_ton_2"/>
+                                    <field name="seuil_tone_1"/>
+                                    <field name="seuil_ton_2" invisible="1"/>
                                     <field name="seuil_atteindre_1" widget="percentage"/>/>
-                                        <field name="seuil_atteindre_2" widget="percentage"/>/>
+                                    <field name="seuil_atteindre_2" widget="percentage"/>/>
                                     <field name="group_id" invisible="1"/>
                                   </tree>
                               </field>
@@ -91,8 +100,8 @@
                     <field name="name"/>
                     <field name="line_farmer_ids"/>
                     <field name="seuil_ids"/>
-                    <field name="date_debut"/>
-                    <field name="date_fin"/>
+                    <!-- <field name="date_debut"/>
+                    <field name="date_fin"/> -->
                 </tree>
             </field>
         </record>
@@ -109,10 +118,14 @@
             <field name="model">prime.exceptionnele</field>
             <field name="arch" type="xml">
                 <form string="">
+                  <header>
+                      <button name="display_eligible_farmers" string="Planteurs bonus prime" type="object" icon="fa-check-circle" class="oe_highlight"/>
+                  </header>
                     <sheet>
                         <group>
                             <group>
                                 <field name="name"/>
+                                <field name="prime_obtenu" invisible="1"/>
                               <label for="date_debut" string="Période"/>
                                <div>
                                   Du <field name="date_debut" class="oe_inline"/>  Au <field name="date_fin" class="oe_inline"/>

@@ -67,33 +67,6 @@ class Weight(models.Model):
                 'res_model': 'farmer.pay', 'type': 'ir.actions.act_window', }
 
 
-    @api.model
-    def create(self, vals):
-        weight = super(Weight, self).create(vals)
-        weight.update_seuil_atteindre()
-        return weight
-
-    def write(self, vals):
-        res = super(Weight, self).write(vals)
-        self.update_seuil_atteindre()
-        return res
-
-    def update_seuil_atteindre(self):
-        for weight in self:
-            group_prime = weight.supplier_id.group_id
-            if group_prime and group_prime.date_debut <= weight.date <= group_prime.date_fin:
-                seuil_prime = self.env['seuil.prime'].search([('group_id', '=', group_prime.id)], limit=1)
-                if seuil_prime and weight.qty >= seuil_prime.seuil_tone_1:
-                    percent = weight.qty / seuil_prime.seuil_tone_1 * 100
-                    weight.weigth_supplier = seuil_prime.seuil_atteindre_1 * percent / 100
-                    # Obtenir tous les planteurs associés au groupe
-                    farmers = weight.supplier_id.search([('group_id', '=', group_prime.id)])
-                    # Effectuer des opérations avec les planteurs (par exemple, afficher leurs noms)
-                    for farmer in farmers:
-                        name_famer = farmer.name
-                        print(farmer.name)
-
-
 class FarmerPay(models.Model):
 
     _name = 'farmer.pay'

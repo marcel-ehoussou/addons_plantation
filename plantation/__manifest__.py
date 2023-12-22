@@ -1,7 +1,7 @@
 {
     'name': 'Paie Planteur',
     'version': '1.0',
-    'sequence': '10',
+    'sequence': '-1',
     'summary': 'Summery',
     'description':"""
     Ce module facilite la gestion de la paie planteur dans Odoo
@@ -25,6 +25,7 @@
         'views/menu.xml',
         'wizard/import_bascule.xml',
         'wizard/plantation.xml',
+        'wizard/prime_wizard_view.xml',
         'views/config.xml',
         'views/partner.xml',
         'views/plantation.xml',

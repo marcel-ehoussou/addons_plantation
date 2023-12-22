@@ -54,3 +54,4 @@ access_prime_exceptionnele,prime.exceptionnele,model_prime_exceptionnele,group_h
 access_group_prime,group.prime,model_group_prime,group_hr_prime_exceptionnele,1,1,1,1
 access_planting_prime,planting.prime,model_planting_prime,group_hr_prime_exceptionnele,1,1,1,1
 access_seuil_prime,seuil.prime,model_seuil_prime,group_hr_prime_exceptionnele,1,1,1,1
+access_farmer_list_wizard,farmer.list.wizard,model_farmer_list_wizard,group_hr_prime_exceptionnele,1,1,1,1

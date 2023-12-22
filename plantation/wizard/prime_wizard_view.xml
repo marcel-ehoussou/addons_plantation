@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_farmer_list_wizard" model="ir.ui.view">
+        <field name="name">farmer.list.wizard.form</field>
+        <field name="model">farmer.list.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="group_id" invisible="1"/>
+                    <field name="farmers_display" widget="text" readonly="1"/>
+                    <field name="farmers_display_eligible" widget="text" readonly="1" invisible="1" />
+                </group>
+                <!-- <footer>
+                    <button string="Afficher les Planteurs" type="object" name="action_show_farmers" class="btn-primary"/>
+                    <button string="Annuler" type="object" name="cancel" class="btn-secondary"/>
+                </footer> -->
+            </form>
+        </field>
+    </record>
+</odoo>
